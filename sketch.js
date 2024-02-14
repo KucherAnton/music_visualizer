@@ -1,8 +1,8 @@
 let music = [
 	'Lida-Секс',
+	'Валентин Стрыкало-Бесполезно',
 	'Slipknot-Psychosocial',
 	'The Pretty Reckless-My Medicine',
-	'Валентин Стрыкало-Бесполезно',
 	'Валентин Стрыкало-Кайен',
 	'Дора-Дорадура',
 	'Звери-Для тебя',
@@ -30,9 +30,9 @@ function setup() {
 	angleMode(DEGREES);
 	imageMode(CENTER);
 	rectMode(CENTER);
-	fft = new p5.FFT(0.3);
+	fft = new p5.FFT(0.9);
 
-	img.filter(BLUR, 4);
+	img.filter(BLUR, 2);
 }
 
 function draw() {
@@ -41,14 +41,15 @@ function draw() {
 	translate(width / 2, height / 2);
 
 	fft.analyze();
-	amp = fft.getEnergy(50, 200);
+	amp = fft.getEnergy(150, 250);
+	console.log(amp);
 
 	push();
-	if (amp > 230) {
-		rotate(random(-0.5, 0.5));
+	if (amp > 225) {
+		rotate(random(-0.2, 0.2));
 	}
 
-	image(img, 0, 0, width + 100, height + 100);
+	image(img, 0, 0, width + 50, height + 50);
 	pop();
 
 	let alpha = map(amp, 0, 255, 180, 150);
@@ -57,7 +58,7 @@ function draw() {
 	rect(0, 0, width, height);
 
 	stroke(255);
-	strokeWeight(3);
+	strokeWeight(5);
 	noFill();
 
 	let wave = fft.waveform();
@@ -65,11 +66,10 @@ function draw() {
 	for (let t = -1; t < 2; t += 2) {
 		beginShape();
 
-		for (let i = 0; i <= 180; i += 1) {
+		for (let i = 0; i <= 180; i += 2) {
 			let index = floor(map(i, 0, 180, 0, wave.length - 1));
 
-			let r = map(wave[index], -1, 1, 150, 350);
-
+			let r = map(wave[index], -8, 8, 100, 350);
 			let x = r * sin(i) * t;
 			let y = r * cos(i);
 			vertex(x, y);
@@ -83,7 +83,7 @@ function draw() {
 
 	for (let i = particles.length - 1; i >= 0; i--) {
 		if (!particles[i].edges()) {
-			particles[i].update(amp > 240);
+			particles[i].update(amp > 225);
 			particles[i].show();
 		} else {
 			particles.splice(i, 1);
@@ -113,7 +113,9 @@ class Particle {
 	update(cond) {
 		this.vel.add(this.acc);
 		this.pos.add(this.vel);
+		this.pos.add(this.vel);
 		if (cond) {
+			this.pos.add(this.vel);
 			this.pos.add(this.vel);
 			this.pos.add(this.vel);
 		}
